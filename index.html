@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rammerhead Proxy</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #121b2d;
+      --panel-soft: #18233d;
+      --text: #edf3ff;
+      --muted: #b3c2e1;
+      --accent: #4ade80;
+      --accent-2: #3b82f6;
+      --danger: #ef4444;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(74,222,128,0.12), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      padding: 28px 18px 48px;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      font-weight: 900;
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.06em;
+    }
+
+    .panel {
+      background: rgba(18, 27, 45, 0.88);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      padding: 22px;
+      backdrop-filter: blur(8px);
+    }
+
+    .notice {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0 0 12px;
+      font-size: 0.98rem;
+    }
+
+    .notice strong {
+      color: var(--text);
+    }
+
+    .danger {
+      color: var(--danger);
+      font-weight: 700;
+      display: none;
+      margin: 14px 0 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .field {
+      flex: 1;
+      min-width: 220px;
+      position: relative;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      padding: 14px 15px;
+      border-radius: 12px;
+      outline: none;
+      font-size: 1rem;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus {
+      border-color: rgba(74,222,128,0.8);
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.12);
+    }
+
+    input::placeholder {
+      color: #8ea3c9;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.2s ease, filter 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent), #22c55e);
+      color: #05130b;
+    }
+
+    .secondary {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .row-2 {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .row-2 .field {
+      min-width: 0;
+    }
+
+    .advanced {
+      margin-top: 18px;
+      display: none;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .toggle {
+      margin-top: 16px;
+      display: inline-block;
+    }
+
+    .check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 28px;
+      overflow: hidden;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(18, 27, 45, 0.76);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th {
+      background: rgba(255,255,255,0.02);
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    tbody tr:hover {
+      background: rgba(255,255,255,0.02);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 26px;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 700px) {
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+      .field {
+        min-width: 100%;
+      }
+      .input-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">R</div>
+      <h1>Rammerhead Proxy</h1>
+    </header>
+
+    <div class="panel">
+      <p class="notice">
+        Join the <a href="https://discord.gg/VNT4E7gN5Y" style="color:#8ab4ff;">Discord server</a> for updates or just chat about life.
+      </p>
+
+      <p class="notice"><strong>Notice:</strong> inactive sessions will be deleted after 3 days.</p>
+
+      <p class="notice">
+        <strong>Notice 2:</strong> Treat every session ID like an isolated incognito browser that belongs only to you. Do not share the session ID.
+      </p>
+
+      <p id="errorText" class="danger">Error: some text</p>
+
+      <div class="input-row">
+        <div class="field">
+          <label for="urlInput">Enter URL</label>
+          <input id="urlInput" type="text" placeholder="https://www.google.com/" />
+        </div>
+        <button class="primary" id="goBtn">Go!</button>
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label for="sessionId">Session ID</label>
+          <input id="sessionId" readonly type="text" placeholder="Create a new session ID or paste an existing one" />
+        </div>
+        <button class="secondary" id="newSessionBtn">Create new session ID</button>
+      </div>
+
+      <button class="ghost toggle" id="advancedToggle">Show advanced options</button>
+
+      <div id="advancedPanel" class="advanced">
+        <div class="check">
+          <input type="checkbox" id="shuffleCheck" checked />
+          <label for="shuffleCheck">Enable URL Shuffling</label>
+        </div>
+
+        <div class="field">
+          <label for="httpProxy">HTTP Proxy</label>
+          <input id="httpProxy" type="text" placeholder="http://username:password@proxyipaddress:proxyport" />
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Session ID</th>
+          <th>Created on</th>
+        </tr>
+      </thead>
+      <tbody id="sessionTableBody">
+        <tr>
+          <td colspan="2" style="color: var(--muted);">No sessions yet.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer>
+      Made by Iammcodersch
+    </footer>
+  </div>
+
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    const sessionId = document.getElementById('sessionId');
+    const errorText = document.getElementById('errorText');
+    const advancedToggle = document.getElementById('advancedToggle');
+    const advancedPanel = document.getElementById('advancedPanel');
+    const newSessionBtn = document.getElementById('newSessionBtn');
+    const goBtn = document.getElementById('goBtn');
+    const sessionTableBody = document.getElementById('sessionTableBody');
+
+    function makeSessionId() {
+      return 'sess_' + Math.random().toString(36).slice(2, 10);
+    }
+
+    function showError(msg) {
+      errorText.textContent = 'Error: ' + msg;
+      errorText.style.display = 'block';
+    }
+
+    function hideError() {
+      errorText.style.display = 'none';
+    }
+
+    function updateSessionTable() {
+      const existing = JSON.parse(localStorage.getItem('rammerhead_sessions') || '[]');
+      if (!existing.length) {
+        sessionTableBody.innerHTML = '<tr><td colspan="2" style="color: var(--muted);">No sessions yet.</td></tr>';
+        return;
+      }
+
+      sessionTableBody.innerHTML = existing.map((item) => `
+        <tr>
+          <td>${item.id}</td>
+          <td>${item.created}</td>
+        </tr>
+      `).join('');
+    }
+
+    function saveSession(id) {
+      const list = JSON.parse(localStorage.getItem('rammerhead_sessions') || '[]');
+      const found = list.some(item => item.id === id);
+      if (!found) {
+        list.unshift({
+          id,
+          created: new Date().toLocaleString()
+        });
+        localStorage.setItem('rammerhead_sessions', JSON.stringify(list.slice(0, 20)));
+      }
+      updateSessionTable();
+    }
+
+    function createNewSession() {
+      const id = makeSessionId();
+      sessionId.value = id;
+      saveSession(id);
+      hideError();
+    }
+
+    newSessionBtn.addEventListener('click', createNewSession);
+
+    advancedToggle.addEventListener('click', () => {
+      const hidden = advancedPanel.style.display === 'none' || advancedPanel.style.display === '';
+      advancedPanel.style.display = hidden ? 'block' : 'none';
+      advancedToggle.textContent = hidden ? 'Hide advanced options' : 'Show advanced options';
+    });
+
+    goBtn.addEventListener('click', () => {
+      const value = urlInput.value.trim();
+      if (!value) {
+        showError('Please enter a URL.');
+        return;
+      }
+
+      if (!sessionId.value) {
+        createNewSession();
+      }
+
+      const finalUrl = value.startsWith('http://') || value.startsWith('https://')
+        ? value
+        : 'https://' + value;
+
+      window.location.href = finalUrl;
+    });
+
+    updateSessionTable();
+
+    if (!sessionId.value) {
+      const saved = localStorage.getItem('last_session_id');
+      if (saved) {
+        sessionId.value = saved;
+      }
+    }
+
+    sessionId.addEventListener('input', () => {
+      localStorage.setItem('last_session_id', sessionId.value);
+      if (sessionId.value.trim()) {
+        hideError();
+      }
+    });
+  </script>
+</body>
+</html>
